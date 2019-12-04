@@ -45,6 +45,10 @@ void writeWP(int idx)
     setpoint.header.stamp = ros::Time::now();
 }
 
+double distance(double x, double y, double z) {
+    return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+}
+
 int main (int argc, char** argv)
 {
     ros::init(argc, argv, "waypoint");
@@ -96,12 +100,12 @@ int main (int argc, char** argv)
         {
             // check Cartesian distance to current wp
             // update setpoint if needed
-
-                        
-
-
-
-
+            if(distance(coord(idx, "x") - pose.position.x, coord(idx, "y") - pose.position.y, coord(idx, "z") - pose.position.z) < thr &&
+               abs(coord(idx, "theta") - 2*atan2(pose.orientation.z, pose.orientation.w)) < thr_angle)
+            {
+                idx = (idx+1)%wp.size();
+                writeWP(idx);
+            }
             // publish setpoint
             setpoint_pub.publish(setpoint);
         }
